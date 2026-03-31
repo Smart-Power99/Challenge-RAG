@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: aapl_api
+    ports:
+      - "8222:8222"
+    volumes:
+      - ./data:/app/data
+    env_file:
+      - .env
+    environment:
+      # 进一步强化容器内部全局镜像源代理，确保容器不论何种情况都能连击下模型
+      - HF_ENDPOINT=https://hf-mirror.com
+    command: ["uvicorn", "app.api:app", "--host", "0.0.0.0", "--port", "8222"]
+
+  web:
+    build: .
+    container_name: aapl_web
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+    env_file:
+      - .env
+    environment:
+      - API_URL=http://api:8222/ask
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+    depends_on:
+      - api
+    command: ["streamlit", "run", "app/ui.py", "--server.port=8501"]
