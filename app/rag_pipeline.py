@@ -1,5 +1,4 @@
 import os
-# 强行注入国内 HuggingFace 加速镜像代理，解决一切无法下载和 timeout 问题
 os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
 
 import json
